@@ -3,6 +3,8 @@ import numpy as np
 import face_recognition
 # untuk mengakses file
 import os 
+# untuk waktu dan date
+from datetime import datetime
 
 
 path = 'ImagesAttendance'   # path untuk mengakses file
@@ -28,7 +30,21 @@ def findEncodings(images):
     return encodeList
 
 
-# fungsi absensi
+# fungsi absensi menggunakan nama dan waktu
+def markAttendance(name):
+    with open('Attendance.csv', 'r+') as f: # membuka file csv
+        #agar orang yang sudah datang tidak mengulangi absen
+        myDataList = f.readlines()
+        nameList = []
+        for line in myDataList:
+            entry = line.split(',')
+            nameList.append(entry[0])
+        if name not in nameList:
+            now = datetime.now() # waktu sekarang
+            dtString = now.strftime('%H:%M:%S') # format waktu
+            f.writelines(f'\n{name},{dtString}') # menulis nama dan waktu
+            
+        
 
 
 #membuat list yang sudah di encoding
@@ -65,6 +81,8 @@ while True:
             cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2) # membuat kotak pada wajah
             cv2.rectangle(img, (x1, y2-35), (x2, y2), (0, 255, 0), cv2.FILLED) # membuat kotak pada nama file
             cv2.putText(img, name, (x1+6, y2-6), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2) # menulis nama file
+            #memakai fungsi absensi
+            markAttendance(name)
     
     cv2.imshow('Webcam', img) # menampilkan gambar
     cv2.waitKey(1) # menunggu 1 detik
