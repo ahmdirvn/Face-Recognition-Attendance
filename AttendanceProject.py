@@ -53,7 +53,7 @@ print(len(encodeListKnown))
 print('Encoding Complete')
 
 #mengambil gambar yang akan di cocokan encodingnya dari webcam
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('http://192.168.0.107:4747/video')
 
 while True:
     success, img = cap.read() # membaca gambar
@@ -67,7 +67,7 @@ while True:
     for encodeFace, faceLoc in zip(encodesCurFrame, faceCurFrame): #mengambil wajah yang sudah di encoding dan wajah yang sudah di temukan
         matches = face_recognition.compare_faces(encodeListKnown, encodeFace) #mendapatkan pengukuran 128 dimensi dan membandingkan
         faceDis = face_recognition.face_distance(encodeListKnown, encodeFace)  #menemukan jarak antara wajah
-        print(faceDis)
+        print(faceDis) #menampilkan jarak antara wajah
         matchIndex = np.argmin(faceDis) #mencari jarak terkecil agar bisa di cocokan dengan nama file
         
         y1, x2, y2, x1 = faceLoc
@@ -76,7 +76,7 @@ while True:
         # membuat kotak pada wajah dan menulis nama file
         if matches[matchIndex]:
             name = classNames[matchIndex].upper()
-            print(name)
+            print(name) #menampilkan nama file
             cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2) # membuat kotak pada wajah
             cv2.rectangle(img, (x1, y2-35), (x2, y2), (0, 255, 0), cv2.FILLED) # membuat kotak pada nama file
             cv2.putText(img, name, (x1+6, y2-6), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2) # menulis nama file
@@ -85,7 +85,8 @@ while True:
         else:
             cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2) # membuat kotak pada wajah
             cv2.rectangle(img, (x1, y2-35), (x2, y2), (0, 255, 0), cv2.FILLED) # membuat kotak pada nama file
-            cv2.putText(img, "UNKNOWN", (x1+6, y2-6), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2) # menulis "UNKNOWN"
+            unknown = cv2.putText(img, "UNKNOWN", (x1+6, y2-6), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2) # menulis "UNKNOWN"
+            print(unknown) #menampilkan "UNKNOWN"
         
         cv2.imshow('Webcam', img) # menampilkan gambar
         if cv2.waitKey(1) & 0xFF == ord('q'):
